@@ -27,9 +27,7 @@ namespace DivideArray
 
 
             List<double> arraylist = new List<double>();
-            //List<int> index = DivideArray(arraylist);
-            //printGroup(index, arraylist);
-            int n = 60;
+            int n = 100;
             Random random = new Random();
             for (int i = 0; i < n; i++)
             {
@@ -106,18 +104,10 @@ namespace DivideArray
                 step++;
             }
 
-
-            //return null;
         }
 
         static void printGroup(List<int> index, List<double> arraylist)
         {
-
-            if (index.Count != 4)
-            {
-                Console.WriteLine("The division is failed. Please change the array\n");
-            }
-
 
             List<double> compare = new List<double>();
             for (int i = 0; i < index.Count - 1; i++)
@@ -182,38 +172,7 @@ namespace DivideArray
                 range -= 10;
             }
 
-
-
-            //double total = 0;
             list_index.Add(count);
-            //int j = list_index.Count-1;
-
-            /**
-            while (j>1)
-            {
-                total = 0;
-                bool indexIsChanged = false;
-                for (int i = list_index[j]-1; i >= 0; i--)
-                {
-                    if (i < list_index[j-1])
-                    {
-                        if (total >= 300){
-                            break;
-                        }
-                        else
-                        {
-                            list_index[j-1]--;
-                            indexIsChanged = true;
-                        }
-                    }
-
-                    total += arraylist[i];
-                }
-                if (!indexIsChanged)
-                    break;
-                j--;
-            }
-            */
 
             return list_index;
         }
