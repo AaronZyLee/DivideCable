@@ -1,0 +1,6 @@
+c:\users\dell\documents\visual studio 2012\Projects\DivideArray\DivideArray\bin\Debug\DivideArray.exe.config
+c:\users\dell\documents\visual studio 2012\Projects\DivideArray\DivideArray\bin\Debug\DivideArray.exe
+c:\users\dell\documents\visual studio 2012\Projects\DivideArray\DivideArray\bin\Debug\DivideArray.pdb
+c:\users\dell\documents\visual studio 2012\Projects\DivideArray\DivideArray\obj\Debug\DivideArray.csprojResolveAssemblyReference.cache
+c:\users\dell\documents\visual studio 2012\Projects\DivideArray\DivideArray\obj\Debug\DivideArray.exe
+c:\users\dell\documents\visual studio 2012\Projects\DivideArray\DivideArray\obj\Debug\DivideArray.pdb
