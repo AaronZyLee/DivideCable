@@ -56,8 +56,11 @@ namespace DivideArray
             int step = step_min;
             bool isSucceeded = false;
 
+            Console.WriteLine("电缆总长度为" + total +"m, 可分段数为" + step_min + "~" + step_max + ";\n");
+
             while (!isSucceeded && step <= step_max)
             {
+                Console.WriteLine("将进行大段数为" + step +"的分组：\n");
                 int position = 0;
                 for (int i = 0; i < step; i++)
                 {
