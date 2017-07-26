@@ -17,20 +17,12 @@ namespace Cable
     {
 
         Document doc;
+        List<FamilyInstance> wells = new List<FamilyInstance>();
         
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             UIApplication app = commandData.Application;
             doc = app.ActiveUIDocument.Document;
-
-            /**
-            FilteredElementCollector collector = new FilteredElementCollector(doc);
-            if (collector != null)
-                collector.OfClass(typeof(FamilyInstance));
-            IList<Element> list = collector.ToElements();
-
-             */
- 
 
             //选择工井作为起始点
             Autodesk.Revit.UI.Selection.Selection sel = app.ActiveUIDocument.Selection;
@@ -72,10 +64,18 @@ namespace Cable
 
             //获取工井间隔的距离
             List<double> intervals = getIntervals(location);
+
+            //利用分段算法提取切割点
             List<List<int>> index = DivideBigComponent(intervals);
             List<XYZ> cutPoint = new List<XYZ>();
 
             if (index != null)
+            {
+                message = "分段失败，请重新选择区间";
+                TaskDialog.Show("错误", message);
+                return Result.Failed;
+            }
+            else
             {
                 int sentinel = 0;
                 for (int i = 0; i < index.Count; i++)
@@ -85,18 +85,10 @@ namespace Cable
                         if (j == index[i].Count - 1)
                             sentinel += index[i][j];
                         else
-                            cutPoint.Add(location[index[i][j]+sentinel]);
+                            cutPoint.Add(location[index[i][j] + sentinel]);
                     }
                 }
-            }
-                
-                string result = "";
-                for (int i = 0; i < cutPoint.Count; i++)
-                {
-                    result += cutPoint[i] + " ";
-                }
-                TaskDialog.Show("1", result);
-
+            }           
 
             //选取项目中的电缆
             FlexDuctFilter fdFilter = new FlexDuctFilter();
@@ -115,7 +107,7 @@ namespace Cable
             return Result.Succeeded;
         }
 
-        #region Divide Cable
+        #region Divide Cable算法
 
         public List<List<int>> DivideBigComponent(List<double> arraylist)
         {

@@ -27,7 +27,7 @@ namespace DivideArray
 
             double[] dbarr3 = {106.88,104.91,99.89,98.08,123.25,118.37,114.43,95.27,113.41,96.27,207.91,91.13,110.23,109.80,110.19,110.39,110.24,
                                   75.11,82.60,98.06,99.78,99.85,100.31,103.39};
-
+            double[] dbarr4 = { 100, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
 
             List<double> arraylist = new List<double>();
             int n = 60;
@@ -40,7 +40,7 @@ namespace DivideArray
             }
 
             List<double> arraylist1 = new List<double>();
-            arraylist1.AddRange(dbarr3);
+            arraylist1.AddRange(dbarr4);
 
             DivideBigComponent(arraylist1);
 
