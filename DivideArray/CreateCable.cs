@@ -436,15 +436,17 @@ namespace Cable
             }
             if (firstLine.Count != 0 && secondLine.Count != 0)
             {
+                double l2 = secondLine[0].DistanceTo(secondLine[secondLine.Count - 1]);
                 string radius = cable.LookupParameter("直径").AsValueString();
                 double r = 100;
                 radius = Regex.Replace(radius, "[a-z]", "", RegexOptions.IgnoreCase);
                 double.TryParse(radius, out r);
                 CreateFlexDuct(doc, firstLine, r);
+                FlexDuct firstline = CreateFlexDuct(doc, firstLine, r);
                 FlexDuct secondline = CreateFlexDuct(doc, secondLine, r);
                 doc.Delete(cable.Id);
 
-                return secondline;
+                return FttoM(l2)> 600 ? secondline : firstline;
             }
             return null;
         }
