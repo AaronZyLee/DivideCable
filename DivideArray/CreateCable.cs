@@ -23,14 +23,19 @@ namespace Cable
             UIApplication app = commandData.Application;
             doc = app.ActiveUIDocument.Document;
 
+            /**
             FilteredElementCollector collector = new FilteredElementCollector(doc);
             if (collector != null)
                 collector.OfClass(typeof(FamilyInstance));
             IList<Element> list = collector.ToElements();
 
+             */
+ 
+
             //选择工井作为起始点
             Autodesk.Revit.UI.Selection.Selection sel = app.ActiveUIDocument.Selection;
             WellFilter fmft = new WellFilter();
+            IList<Element> well_group = sel.PickElementsByRectangle(fmft, "请选择剪切电缆覆盖的所有工井");
             Reference refWell = sel.PickObject(Autodesk.Revit.UI.Selection.ObjectType.Element,fmft,"请选择起始工井");
             FamilyInstance start = doc.GetElement(refWell) as FamilyInstance;
 
@@ -39,17 +44,12 @@ namespace Cable
             if(start!=null)
                 location.Insert(0, (start.Location as LocationPoint).Point);
 
-            //过滤非工井族的类型
-            List<string> familyName = new List<string>();
-            string[] fn = { "直通工井", "三通工井", "四通工井", "三通工井(6.0×2.5×1.9）", "宽口三通工井(12.0×2.5×1.9）" };
-            familyName.AddRange(fn);
-
             //其余点先加入temp中
             List<XYZ> temp = new List<XYZ>();
-            foreach (Element e in list)
+            foreach (Element e in well_group)
             {
                 FamilyInstance f = e as FamilyInstance;
-                if (familyName.Contains(f.Symbol.Family.Name) && f.Id != start.Id)
+                if (f.Id != start.Id)
                     temp.Add((f.Location as LocationPoint).Point);
             }
 
@@ -98,29 +98,25 @@ namespace Cable
                 TaskDialog.Show("1", result);
 
 
-            
-           
-             
-
             //选取项目中的电缆
             FlexDuctFilter fdFilter = new FlexDuctFilter();
             Reference refCable = sel.PickObject(Autodesk.Revit.UI.Selection.ObjectType.Element,fdFilter,"请选择需要分割的电缆");
             FlexDuct cable = doc.GetElement(refCable) as FlexDuct;
 
+            //分割选中的电缆
             Transaction trans = new Transaction(doc);
             trans.Start("分割电缆");
+
             if (cable != null)
-            {
-                TaskDialog.Show("1", "ok!");
                 cutCableAtPoint(doc, cable, cutPoint);
-            }
-            trans.Commit();    
             
+            trans.Commit();    
 
             return Result.Succeeded;
         }
 
         #region Divide Cable
+
         public List<List<int>> DivideBigComponent(List<double> arraylist)
         {
             int count = arraylist.Count;
