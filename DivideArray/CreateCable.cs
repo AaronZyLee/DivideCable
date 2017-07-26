@@ -31,50 +31,56 @@ namespace Cable
             Reference refWell = sel.PickObject(Autodesk.Revit.UI.Selection.ObjectType.Element,fmft,"请选择起始工井");
             FamilyInstance start = doc.GetElement(refWell) as FamilyInstance;
 
-            //将起点位置加入location中
-            List<XYZ> location = new List<XYZ>();
+            //将起点位置的工井加入location中
+            List<FamilyInstance> location = new List<FamilyInstance>();
             if(start!=null)
-                location.Insert(0, (start.Location as LocationPoint).Point);
+                location.Insert(0, start);
 
-            //其余点先加入temp中
-            List<XYZ> temp = new List<XYZ>();
+            //其余工井先加入temp中
+            List<FamilyInstance> temp = new List<FamilyInstance>();
             foreach (Element e in well_group)
             {
                 FamilyInstance f = e as FamilyInstance;
                 if (f.Id != start.Id)
-                    temp.Add((f.Location as LocationPoint).Point);
+                    temp.Add(f);
             }
 
-            //根据和起点距离的大小，将其余工井的位置按顺序插入location中
+            //根据和起点距离的大小，将其余工井按顺序插入location中，并获取间隔距离intervals
             int count = temp.Count;
+            List<double> intervals = new List<double>();
             for(int i=0;i<count;i++){
                 double min = double.PositiveInfinity;
                 int index_min = 0;
+                double temp_length = 0;
                 for (int j = 0; j < temp.Count; j++)
                 {
-                    if (temp[j].DistanceTo(location[i]) < min)
+                    temp_length = (temp[j].Location as LocationPoint).Point.DistanceTo((location[i].Location as LocationPoint).Point);
+                    if (temp_length < min)
                     {
-                        min = temp[j].DistanceTo(location[i]);
+                        min = temp_length;
                         index_min = j;
                     }
                 }
+                intervals.Add(FttoM(min));
                 location.Add(temp[index_min]);
                 temp.RemoveAt(index_min);
             }
 
-            //获取工井间隔的距离
-            List<double> intervals = getIntervals(location);
 
             //利用分段算法提取切割点
             List<List<int>> index = DivideBigComponent(intervals);
             List<XYZ> cutPoint = new List<XYZ>();
 
-            if (index != null)
+            //index_cut剪切点下标
+            List<int> index_cut = new List<int>();
+
+            //若分组失败则结束命令
+            if (index == null)
             {
                 message = "分段失败，请重新选择区间";
-                TaskDialog.Show("错误", message);
                 return Result.Failed;
             }
+            //成功则定位剪切点
             else
             {
                 int sentinel = 0;
@@ -85,7 +91,11 @@ namespace Cable
                         if (j == index[i].Count - 1)
                             sentinel += index[i][j];
                         else
-                            cutPoint.Add(location[index[i][j] + sentinel]);
+                        {
+                            cutPoint.Add((location[index[i][j] + sentinel].Location as LocationPoint).Point);
+                            index_cut.Add(index[i][j] + sentinel);
+                        }
+                            
                     }
                 }
             }           
